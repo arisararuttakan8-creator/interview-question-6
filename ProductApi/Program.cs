@@ -19,4 +19,11 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapControllers(); 
 
+// Seed data
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    await SeedData.Initialize(context);
+}
+
 app.Run();
