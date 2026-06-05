@@ -1,0 +1,25 @@
+# .NET
+bin/
+obj/
+*.user
+*.suo
+.vs/
+*.dll
+*.pdb
+*.exe
+
+# Environment
+appsettings.Development.json
+.env
+
+# Docker
+postgres_data/
+
+# Vue
+node_modules/
+dist/
+.nuxt/
+
+# OS
+.DS_Store
+Thumbs.db
