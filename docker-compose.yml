@@ -1,0 +1,11 @@
+# docker-compose.yml
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: product_service-postgres
+    environment:
+      POSTGRES_USER: product_service
+      POSTGRES_PASSWORD: product_service
+      POSTGRES_DB: product_service
+    ports:
+      - "5433:5432"
