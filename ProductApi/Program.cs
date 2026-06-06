@@ -9,14 +9,16 @@ builder.Services.AddCors(options =>
     {
         policy.WithOrigins(
             "http://localhost:5173",
-            "https://interview-question-6.vercel.app"          
-            )
-              .AllowAnyHeader()
-              .AllowAnyMethod();
+            "https://interview-question-6.vercel.app"
+        )
+        .AllowAnyHeader()
+        .AllowAnyMethod();
     });
 });
 
 builder.Services.AddOpenApi();
+builder.Services.AddEndpointsApiExplorer(); 
+builder.Services.AddSwaggerGen();           
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
     {
@@ -26,10 +28,8 @@ builder.Services.AddControllers()
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
     var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
-    
     if (databaseUrl != null)
     {
-        // แปลง postgresql:// format เป็น Npgsql format
         var uri = new Uri(databaseUrl);
         var userInfo = uri.UserInfo.Split(':');
         var connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
@@ -40,14 +40,18 @@ builder.Services.AddDbContext<AppDbContext>(options =>
         options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
     }
 });
-var app = builder.Build();
+
+var app = builder.Build(); 
+
+app.UseSwagger();
+app.UseSwaggerUI();
 
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
 
-app.UseCors("AllowVue"); 
+app.UseCors("AllowVue");
 app.UseHttpsRedirection();
 app.MapControllers();
 
