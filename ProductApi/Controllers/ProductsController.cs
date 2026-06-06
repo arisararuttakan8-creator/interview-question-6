@@ -19,11 +19,28 @@ public class ProductsController : ControllerBase
 
     // GET: api/products
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Product>>> GetAll()
+    public async Task<ActionResult> GetAll([FromQuery] int page = 1, [FromQuery] int pageSize = 25)
     {
-        return await _context.Products
+        var total = await _context.Products.CountAsync();
+        var products = await _context.Products
             .Include(p => p.Category)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
             .ToListAsync();
+
+        return Ok(new {
+            status = 200,
+            message = "success",
+            data = new {
+                items = products,
+                pagination = new {
+                    total,
+                    page,
+                    pageSize,
+                    totalPages = (int)Math.Ceiling((double)total / pageSize)
+                }
+            }
+        });
     }
 
     // GET: api/products/1
