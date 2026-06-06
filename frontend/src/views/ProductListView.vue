@@ -19,7 +19,7 @@
         <thead>
           <tr>
             <th>ID</th>
-            <th>รหัสสินค้า</th>
+            <th>Product code</th>
             <th>Barcode</th>
             <th>Action</th>
           </tr>
@@ -32,7 +32,7 @@
               <svg :id="`barcode-${product.id}`"></svg>
             </td>
             <td>
-              <button @click="deleteProduct(product.id)">ลบ</button>
+              <button @click="deleteProduct(product.id)">Delete</button>
             </td>
           </tr>
         </tbody>
@@ -100,23 +100,39 @@
       codeError.value = 'รหัสสินค้าต้องเป็น A-Z หรือ 0-9 เท่านั้น และมี 16 หลัก'
       return
     }
-    await api.post('/products', {
-      code: newCode.value,
-      name: newCode.value,
-      categoryId: 1,
-      price: 0,
-      stock: 0,
-      createdBy: 'admin'
-    })
-    newCode.value = ''
-    await fetchProducts()
+    
+    try {
+      await api.post('/products', {
+        code: newCode.value,
+        name: newCode.value,
+        categoryId: 1,
+        price: 0,
+        stock: 0,
+        createdBy: 'admin'
+      })
+      newCode.value = ''
+      await fetchProducts()
+      alert('เพิ่มสินค้าสำเร็จ ✅')
+    } catch (error: any) {
+      if (error.response?.status === 409) {
+        codeError.value = 'รหัสสินค้านี้มีอยู่แล้วค่ะ'
+      } else {
+        codeError.value = 'เกิดข้อผิดพลาด กรุณาลองใหม่ค่ะ'
+      }
+    }
   }
-  
+
   const deleteProduct = async (id: number) => {
     const confirmed = confirm('ยืนยันการลบสินค้านี้?')
     if (!confirmed) return
-    await api.delete(`/products/${id}`)
-    await fetchProducts()
+    
+    try {
+      await api.delete(`/products/${id}`)
+      await fetchProducts()
+      alert('ลบสินค้าสำเร็จ ✅')
+    } catch {
+      alert('เกิดข้อผิดพลาด กรุณาลองใหม่ค่ะ')
+    }
   }
   
   const changePage = async (newPage: number) => {
@@ -129,7 +145,8 @@
   
   <style scoped>
   .container { padding: 24px; }
-  .add-form { display: flex; gap: 8px; margin-bottom: 16px; align-items: center; }
+  .add-form { display: flex; gap: 8px; margin-bottom: 16px; align-items: center;}
+  .add-form input {padding:4px}
   .error { color: red; font-size: 12px; }
   table { width: 100%; border-collapse: collapse; }
   th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
