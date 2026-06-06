@@ -5,9 +5,12 @@
       <!-- Add Form -->
       <div class="add-form">
         <input
+          id="productCode"
+          name="productCode"
           v-model="newCode"
           placeholder="xxxx-xxxx-xxxx-xxxx"
           maxlength="19"
+          autocomplete="off"
           @input="formatCode"
         />
         <span v-if="codeError" class="error">{{ codeError }}</span>
@@ -82,11 +85,29 @@
     await renderBarcodes()
   }
   
-  const formatCode = () => {
-    // auto format xxxx-xxxx-xxxx-xxxx
-    let val = newCode.value.replace(/[^A-Z0-9]/g, '').toUpperCase()
-    val = val.match(/.{1,4}/g)?.join('-') ?? val
-    newCode.value = val
+  const formatCode = (event: Event) => {
+    const input = event.target as HTMLInputElement
+    const cursorPos = input.selectionStart ?? 0
+
+    // กรอง เฉพาะ A-Z 0-9 และ uppercase ค่ะ
+    let raw = input.value.replace(/-/g, '').toUpperCase().replace(/[^A-Z0-9]/g, '')
+    
+    // จำกัด 16 ตัวค่ะ
+    raw = raw.slice(0, 16)
+    
+    // format xxxx-xxxx-xxxx-xxxx
+    const parts = raw.match(/.{1,4}/g) ?? []
+    const formatted = parts.join('-')
+    
+    newCode.value = formatted
+
+    nextTick(() => {
+      // นับ - ที่เพิ่มเข้ามาค่ะ
+      const rawPos = raw.slice(0, cursorPos).length
+      const dashCount = Math.floor(rawPos / 4)
+      const newPos = Math.min(rawPos + dashCount, formatted.length)
+      input.setSelectionRange(newPos, newPos)
+    })
   }
   
   const validateCode = (code: string) => {
