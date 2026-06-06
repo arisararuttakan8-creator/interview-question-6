@@ -10,13 +10,22 @@ namespace ProductApi.Migrations
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            // ลบ duplicate ก่อน
+            migrationBuilder.Sql(@"
+                DELETE FROM ""Products""
+                WHERE ""Id"" NOT IN (
+                    SELECT MIN(""Id"")
+                    FROM ""Products""
+                    GROUP BY ""Code""
+                )
+            ");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Products_Code",
                 table: "Products",
                 column: "Code",
                 unique: true);
         }
-
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
