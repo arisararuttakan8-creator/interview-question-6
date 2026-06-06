@@ -21,10 +21,22 @@ builder.Services.AddControllers()
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(
-        Environment.GetEnvironmentVariable("DATABASE_URL") 
-        ?? builder.Configuration.GetConnectionString("DefaultConnection")
-    ));
+{
+    var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
+    
+    if (databaseUrl != null)
+    {
+        // แปลง postgresql:// format เป็น Npgsql format ค่ะ
+        var uri = new Uri(databaseUrl);
+        var userInfo = uri.UserInfo.Split(':');
+        var connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
+        options.UseNpgsql(connectionString);
+    }
+    else
+    {
+        options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection"));
+    }
+});
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
