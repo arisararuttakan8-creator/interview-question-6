@@ -48,7 +48,7 @@ A full-stack product management system built with ASP.NET Core, Vue.js, and Post
 
 ### 1. Clone the repository
 ```bash
-git clone https://github.com/yourusername/interview-question-6.git
+git clone https://github.com/arisararuttakan8-creator/interview-question-6.git
 cd interview-question-6
 ```
 
@@ -78,7 +78,7 @@ Frontend จะ run ที่ `http://localhost:5173`
 
 ## 📖 API Documentation
 
-Swagger UI พร้อมใช้งานที่ `http://localhost:5100/openapi/v1.json`
+Swagger UI พร้อมใช้งานที่ `https://interview-question-6-production.up.railway.app/swagger`
 
 ### Endpoints
 
