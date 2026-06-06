@@ -79,6 +79,8 @@ Frontend จะ run ที่ `http://localhost:5173`
 ## 📖 API Documentation
 
 Swagger UI พร้อมใช้งานที่ `https://interview-question-6-production.up.railway.app/swagger`
+![Swagger](./docs/swagger.png)
+
 
 ### Endpoints
 
