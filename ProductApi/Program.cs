@@ -26,7 +26,7 @@ builder.Services.AddDbContext<AppDbContext>(options =>
     
     if (databaseUrl != null)
     {
-        // แปลง postgresql:// format เป็น Npgsql format ค่ะ
+        // แปลง postgresql:// format เป็น Npgsql format
         var uri = new Uri(databaseUrl);
         var userInfo = uri.UserInfo.Split(':');
         var connectionString = $"Host={uri.Host};Port={uri.Port};Database={uri.AbsolutePath.TrimStart('/')};Username={userInfo[0]};Password={userInfo[1]};SSL Mode=Require;Trust Server Certificate=true";
@@ -51,6 +51,7 @@ app.MapControllers();
 using (var scope = app.Services.CreateScope())
 {
     var context = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    context.Database.Migrate();
     await SeedData.Initialize(context);
 }
 
