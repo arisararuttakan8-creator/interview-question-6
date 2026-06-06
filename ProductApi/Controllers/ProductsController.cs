@@ -58,6 +58,10 @@ public class ProductsController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<Product>> Create(Product product)
     {
+        var exists = await _context.Products
+            .AnyAsync(p => p.Code == product.Code);
+        if (exists) return Conflict(new { message = "รหัสสินค้านี้มีอยู่แล้วค่ะ" });
+        
         _context.Products.Add(product);
         await _context.SaveChangesAsync();
         return CreatedAtAction(nameof(GetById), new { id = product.Id }, product);
