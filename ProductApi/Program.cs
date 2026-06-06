@@ -21,9 +21,10 @@ builder.Services.AddControllers()
             System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
     });
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration
-        .GetConnectionString("DefaultConnection")));
-
+    options.UseNpgsql(
+        Environment.GetEnvironmentVariable("DATABASE_URL") 
+        ?? builder.Configuration.GetConnectionString("DefaultConnection")
+    ));
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
